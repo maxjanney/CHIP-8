@@ -216,7 +216,7 @@ nibble_f(struct cpu* cpu, uint16_t op)
             cpu->i += cpu->v[x];
             break;
         case 0x29:
-            /* TODO */
+            cpu->i = 5 * (cpu->v[x] & 0xF);
             break;
         case 0x33:
             cpu->mem[cpu->i] = cpu->v[x] / 100;
