@@ -10,8 +10,8 @@ display_create(struct display* d)
     d->window = SDL_CreateWindow("CHIP-8",
                                  SDL_WINDOWPOS_CENTERED,
                                  SDL_WINDOWPOS_CENTERED,
-                                 640,
-                                 320,
+                                 WINDOW_WIDTH,
+                                 WINDOW_HEIGHT,
                                  SDL_WINDOW_SHOWN);
     if (!d->window) {
         return 1;

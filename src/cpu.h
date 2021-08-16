@@ -5,8 +5,8 @@
 
 #include "display.h"
 
-#define MEM_SIZE 4096
-#define NUM_REGS 16
+#define MEM_SIZE   4096
+#define NUM_REGS   16
 #define STACK_SIZE 16
 
 struct cpu

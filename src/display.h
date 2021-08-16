@@ -4,9 +4,12 @@
 #include <SDL2/SDL.h>
 #include <stdint.h>
 
-#define SCREEN_WIDTH 64
+#define SCREEN_WIDTH  64
 #define SCREEN_HEIGHT 32
-#define SCREEN_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT)
+#define SCREEN_SIZE   (SCREEN_WIDTH * SCREEN_HEIGHT)
+
+#define WINDOW_WIDTH  640
+#define WINDOW_HEIGHT 320
 
 struct display
 {
