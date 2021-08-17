@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "cpu.h"
+#include "keyboard.h"
 
 #define PC_START 0x200
 
@@ -35,12 +36,8 @@ static void
 nibble_zero(struct cpu* cpu, uint16_t op)
 {
     switch (op) {
-        case 0x00E0:
-            memset(cpu->frame_buf, 0, SCREEN_SIZE);
-            break;
-        case 0x00EE:
-            cpu->pc = cpu->stack[--cpu->sp];
-            break;
+        case 0x00E0: memset(cpu->frame_buf, 0, SCREEN_SIZE); break;
+        case 0x00EE: cpu->pc = cpu->stack[--cpu->sp]; break;
     }
 }
 
@@ -100,18 +97,10 @@ nibble_eight(struct cpu* cpu, uint16_t op)
     x = X(op);
     y = Y(op);
     switch (NIBBLE(op)) {
-        case 0x0:
-            cpu->v[x] = cpu->v[y];
-            break;
-        case 0x1:
-            cpu->v[x] |= cpu->v[y];
-            break;
-        case 0x2:
-            cpu->v[x] &= cpu->v[y];
-            break;
-        case 0x3:
-            cpu->v[x] ^= cpu->v[y];
-            break;
+        case 0x0: cpu->v[x] = cpu->v[y]; break;
+        case 0x1: cpu->v[x] |= cpu->v[y]; break;
+        case 0x2: cpu->v[x] &= cpu->v[y]; break;
+        case 0x3: cpu->v[x] ^= cpu->v[y]; break;
         case 0x4:
             cpu->v[0xF] = cpu->v[x] > ((cpu->v[x] + cpu->v[y]) & 0xFF);
             cpu->v[x] += cpu->v[y];
@@ -185,12 +174,17 @@ nibble_d(struct cpu* cpu, uint16_t op)
 static void
 nibble_e(struct cpu* cpu, uint16_t op)
 {
+    char key = (char)cpu->v[X(op)];
     switch (BYTE(op)) {
         case 0x9E:
-            /* TODO */
+            if (key_down(key & 0xF)) {
+                cpu->pc = (cpu->pc + 2) & 0xFFF;
+            }
             break;
         case 0xA1:
-            /* TODO */
+            if (!key_down(key & 0xF)) {
+                cpu->pc = (cpu->pc + 2) & 0xFFF;
+            }
             break;
     }
 }
@@ -200,24 +194,12 @@ nibble_f(struct cpu* cpu, uint16_t op)
 {
     uint8_t x = X(op);
     switch (BYTE(op)) {
-        case 0x07:
-            cpu->v[x] = cpu->dt;
-            break;
-        case 0x0A:
-            /* TODO */
-            break;
-        case 0x15:
-            cpu->dt = cpu->v[x];
-            break;
-        case 0x18:
-            cpu->st = cpu->v[x];
-            break;
-        case 0x1E:
-            cpu->i += cpu->v[x];
-            break;
-        case 0x29:
-            cpu->i = 5 * (cpu->v[x] & 0xF);
-            break;
+        case 0x07: cpu->v[x] = cpu->dt; break;
+        case 0x0A: cpu->v[x] = wait_key_press(); break;
+        case 0x15: cpu->dt = cpu->v[x]; break;
+        case 0x18: cpu->st = cpu->v[x]; break;
+        case 0x1E: cpu->i += cpu->v[x]; break;
+        case 0x29: cpu->i = 5 * (cpu->v[x] & 0xF); break;
         case 0x33:
             cpu->mem[cpu->i] = cpu->v[x] / 100;
             cpu->mem[cpu->i + 1] = (cpu->v[x] / 10) % 10;
